@@ -1,16 +1,18 @@
 package com.example.yandextranslate
 
 import android.os.Bundle
-import android.renderscript.RSDriverException
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.navigation.fragment.findNavController
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_first.*
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.net.HttpURLConnection
 import java.net.InetAddress
 
@@ -50,7 +52,30 @@ class FirstFragment : Fragment() {
             mockWebServer.start(ip, port)
 
             val requestsToYandex = RequestsToYandex()
-            result.text = requestsToYandex.myRequest(text = enterText.text.toString())
+            requestsToYandex.myRequest(
+                    text = enterText.text.toString(),
+                    callback = object: Callback<TranslationData> {
+                        override fun onFailure(call: Call<TranslationData>, t: Throwable) {
+                            showTranslationError()
+                        }
+
+                        override fun onResponse(call: Call<TranslationData>, response: Response<TranslationData>) {
+                            if (response.isSuccessful) {
+                                val responseBody = response.body()
+                                if (responseBody != null) {
+                                    result.text = responseBody.text
+                                } else {
+                                    showTranslationError()
+                                }
+                            } else {
+                                showTranslationError()
+                            }
+                        }
+                    })
         }
+    }
+
+    private fun showTranslationError() {
+        Toast.makeText(requireContext(), "Translation failed", Toast.LENGTH_SHORT).show()
     }
 }
