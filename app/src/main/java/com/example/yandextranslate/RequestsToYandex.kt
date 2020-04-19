@@ -11,6 +11,7 @@ class RequestsToYandex {
     private val gson: Gson = GsonBuilder().create()
 
     val yandexUrl = "http://127.0.0.1:8080"
+    //val yandexUrl = "https://translate.yandex.net"
 
     val KEY = "trnsl.1.1.20200413T221437Z.155bf65b20a757c5.5ebf2c44c876f664e5f2e75f5fe5d4d72ca90f83"
 
@@ -21,7 +22,7 @@ class RequestsToYandex {
             .build()
 
         val api: Link = retrofit.create(Link::class.java)
-        val myData = TranslationData(KEY, text, "en-ru")
+        val myData = TranslationData(key = KEY, lang = "en-ru", text = text)
 
         val call = api.translate(myData)
 

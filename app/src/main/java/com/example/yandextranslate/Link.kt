@@ -5,6 +5,6 @@ import retrofit2.http.*
 import java.util.*
 
 interface Link {
-    @POST("./")
+    @POST("/api/v1.5/tr.json/translate")
     fun translate(@Body data: TranslationData): Call<TranslationData>
 }

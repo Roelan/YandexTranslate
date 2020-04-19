@@ -45,33 +45,36 @@ class FirstFragment : Fragment() {
             }
 
             val response = MockResponse()
-            response.setResponseCode(HttpURLConnection.HTTP_OK)
-
+                // response.setResponseCode(HttpURLConnection.HTTP_OK)
             response.setBody(myJson)
 
+            mockWebServer.enqueue(response)
             mockWebServer.start(ip, port)
 
             val requestsToYandex = RequestsToYandex()
             requestsToYandex.myRequest(
-                    text = enterText.text.toString(),
-                    callback = object: Callback<TranslationData> {
-                        override fun onFailure(call: Call<TranslationData>, t: Throwable) {
-                            showTranslationError()
-                        }
+                text = enterText.text.toString(),
+                callback = object : Callback<TranslationData> {
+                    override fun onFailure(call: Call<TranslationData>, t: Throwable) {
+                        showTranslationError()
+                    }
 
-                        override fun onResponse(call: Call<TranslationData>, response: Response<TranslationData>) {
-                            if (response.isSuccessful) {
-                                val responseBody = response.body()
-                                if (responseBody != null) {
-                                    result.text = responseBody.text
-                                } else {
-                                    showTranslationError()
-                                }
+                    override fun onResponse(
+                        call: Call<TranslationData>,
+                        response: Response<TranslationData>
+                    ) {
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+                            if (responseBody != null) {
+                                result.text = responseBody.text
                             } else {
                                 showTranslationError()
                             }
+                        } else {
+                            showTranslationError()
                         }
-                    })
+                    }
+                })
         }
     }
 
